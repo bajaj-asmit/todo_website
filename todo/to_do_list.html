@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: aqua;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .container{
+            display: flex;
+            flex-wrap: wrap;
+            padding: 2px;   
+            justify-content: center;
+            align-items: center;            
+        }
+
+        h1{
+            
+            align-items: center;
+        }
+        th{
+            width: 400px;
+        }
+        .table{
+            background-color:azure;
+        }
+    </style>
+</head>
+<body>
+    <h1>To do List Created By asmit</h1>
+    <div class="container">
+        
+        <div class="table">
+
+    <table border="1" class="table" id="tbl">
+        <thead>
+            <th>Task</th>
+            <th>Update</th>
+       <th>Check</th>
+       <th>Delete</th>
+        </thead>
+        <tbody >
+       
+        </tbody>
+    </table>
+</div>
+    <div class="additem" style="margin-top: 10px;">
+  <label> Add task :</label> <input type="text" class="input" id="task" placeholder="enter your task">
+   <button onclick="AddDataintoLocalStorage()" style="height: 20px; width: 100px;">add</button> 
+</div>
+</div>
+<script >
+var i=0
+var Adddata=[];
+i++;
+function AddDataintoLocalStorage() {
+    var data = document.getElementById("task");
+    var res = data.value;
+    if (res.trim() === "") {
+        alert("Please enter some text in the input field");
+        return;
+    }
+
+    var storedData = localStorage.getItem("data");
+    var Adddata = [];
+
+    if (storedData) {
+        Adddata = JSON.parse(storedData);
+    }
+
+    Adddata.push(res);
+    localStorage.setItem("data", JSON.stringify(Adddata));
+
+    data.value = "";
+
+    updateTable();
+}
+function updateTable() {
+    let storedData = localStorage.getItem("data");
+
+    if (storedData) {
+        let parsedata = JSON.parse(storedData);
+
+        var table = document.getElementById("tbl");
+        table.innerHTML = "";
+
+        var tblheading1 = document.createElement("th");
+        table.appendChild(tblheading1);
+        tblheading1.innerHTML = "Task";
+
+        var tblheading0 = document.createElement("th");
+        table.appendChild(tblheading0);
+        tblheading0.innerHTML = "Update";
+
+        var tblheading2 = document.createElement("th");
+        table.appendChild(tblheading2);
+        tblheading2.innerHTML = "Check";
+
+        var tblheading3 = document.createElement("th");
+        table.appendChild(tblheading3);
+        tblheading3.innerHTML = "Delete";
+       var index=0;
+        for (let i = 0; i < parsedata.length; i++) {
+            var newRow = document.createElement("tr");
+            newRow.setAttribute("id", "data" + i);
+            var key=localStorage.key(i) ;
+           
+            var keyAsInt= parseInt(key);
+           
+            var newList = document.createElement("td");
+            newList.innerHTML = parsedata[i];
+            newList.setAttribute("id", "id" + i);
+            newList.setAttribute("class", index);
+            
+            newRow.appendChild(newList);
+
+            var newlist0 = document.createElement("td");
+ 
+            newlist0.innerHTML = "<button type='button' id='" + index + "' onClick='UpdateTask(\"" + parsedata + "\", this.id)' class='data" + i + "'>Update</button>";
+
+            newRow.appendChild(newlist0);
+
+            var newList1 = document.createElement("td");
+            newList1.innerHTML = "<input type='checkbox' onchange='markTask(this.name)' name='id" + i + "' > <br>";
+            newRow.appendChild(newList1);
+
+            var newList2 = document.createElement("td");
+            newList2.innerHTML = "<button onclick='deleteTask(\"data" + i + "\")' class='data" + i + "'> X </button>";
+            newRow.appendChild(newList2);
+
+            table.appendChild(newRow);
+            index++;
+        }
+    }
+}
+
+window.onload = function () {
+    updateTable();
+};
+
+
+function UpdateTask(data,id) {
+    var newData = prompt("Update task");
+    if (newData.trim() === "") {
+        alert("Please enter some text in the input field");
+        return;
+    }
+    var localstoredArray=JSON.parse(localStorage.getItem("data")) || [];
+    var tag=document.getElementById("id"+id);
+    console.log(tag);
+    if(id>=0 && id<localstoredArray.length )
+    {
+        localstoredArray[id]=newData;
+        tag.innerHTML="";
+        tag.innerHTML=newData;
+    }
+    else
+    {
+        console.log("invalid index");
+    }
+    localStorage.setItem("data",JSON.stringify(localstoredArray));
+
+}
+
+
+
+function markTask(chkbox)
+{
+
+if(chkbox.checked==true){         
+         console.log("checked "+chkbox);
+}
+var delTag;
+var list=document.getElementById(chkbox);
+var text=list.innerText;
+var hasDelTag = list.querySelector("del") !== null;
+
+if(!chkbox.checked)
+{
+
+    console.log("hey i am here "+hasDelTag);
+    
+    if(hasDelTag===false)
+{
+    
+     delTag=document.createElement("del");
+    var text=list.innerText;
+    
+    delTag.innerText=text;
+    list.innerText="";
+    list.appendChild(delTag)
+}
+else if(hasDelTag===true)
+{
+   
+   list.innerHTML=text;
+}
+}
+
+}
+
+function deleteTask(id, i) {
+    var list = document.getElementById(id);
+    list.parentNode.removeChild(list);
+
+    var storedData = localStorage.getItem("data");
+    if (storedData) {
+        var parsedata = JSON.parse(storedData);
+        
+        parsedata.splice(i, 1);
+        
+        localStorage.setItem("data", JSON.stringify(parsedata));
+    }
+}
+
+</script>
+</body>
+
+</html>
